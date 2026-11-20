@@ -1,14 +1,12 @@
 # flagsmith-mcp
 
-Model Context Protocol (MCP) server for [Flagsmith](https://www.flagsmith.com) feature flagging and experimentation.
+> **`flagsmith-mcp` adds Experimentation-focused tools missing from Flagsmith’s official MCP server: A/B experiment creation, Bayesian win probability calculation, and automatic winner shipping — plus a Flutter demo kit for mobile developers.**
 
-Empowers AI coding assistants (such as Claude Code, Cursor, and Antigravity) to:
-- Create multivariate feature flags in Flagsmith
-- Toggle feature flags across environments
-- Inspect flags and traffic splits
+While Flagsmith offers an official MCP server for fundamental flag administration, `flagsmith-mcp` is purpose-built for **closed-loop autonomous experimentation**:
 - Spin up A/B testing experiments measuring conversion metrics
-- Analyze Bayesian win probabilities
+- Analyze Bayesian win probabilities (Beta-binomial Monte Carlo simulation)
 - Automatically ship winning variants by re-allocating 100% traffic
+- Create and toggle multivariate feature flags in Flagsmith
 
 ## Installation
 

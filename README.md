@@ -1,6 +1,6 @@
 # FlagForge 🚩
 
-[![PyPI version](https://img.shields.io/badge/pypi-v0.1.0-blue.svg)](https://pypi.org/project/flagsmith-mcp/)
+[![PyPI version](https://img.shields.io/badge/pypi-v0.1.1-blue.svg)](https://pypi.org/project/flagsmith-mcp/)
 [![GitHub stars](https://img.shields.io/github/stars/tanjirookamado602/flagforge.svg?style=social)](https://github.com/tanjirookamado602/flagforge)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB.svg?logo=python&logoColor=white)](https://python.org)
@@ -8,10 +8,27 @@
 [![Flagsmith Ready](https://img.shields.io/badge/Flagsmith-Self--Hosted-red.svg)](https://flagsmith.com)
 [![Model Context Protocol](https://img.shields.io/badge/MCP-Standard-purple.svg)](https://modelcontextprotocol.io)
 
-> **FlagForge is an open-source, agent-first experimentation engine bridging Flagsmith feature flags with the Model Context Protocol (MCP). It enables AI coding assistants like Claude Code, Cursor, and Antigravity to autonomously provision multivariate feature flags, run Bayesian A/B tests, and automatically ship winning variants into production.**
+> **`flagsmith-mcp` adds Experimentation-focused tools missing from Flagsmith’s official MCP server: A/B experiment creation, Bayesian win probability calculation, and automatic winner shipping — plus a Flutter demo kit for mobile developers.**
 
 👉 **Looking for the one-click Claude prompt? See [CLAUDE_PROMPT.md](file:///home/assassinaj602/Projects/New%20folder%20%284%29/SAAS/Hckathon/11%20Project%20PS5/CLAUDE_PROMPT.md).**  
 🎬 **Looking for the demo recording outline? See [DEMO_SCRIPT.md](file:///home/assassinaj602/Projects/New%20folder%20%284%29/SAAS/Hckathon/11%20Project%20PS5/DEMO_SCRIPT.md).**
+
+---
+
+## 💡 Why FlagForge? (Comparison with Flagsmith's Official MCP Server)
+
+Flagsmith provides an official MCP server focused primarily on general administrative CRUD operations (listing flags, toggling states, managing segments). 
+
+**FlagForge bridges the experimentation gap** by giving autonomous coding agents a complete statistical experimentation engine:
+
+| Capability | Flagsmith Official MCP | FlagForge `flagsmith-mcp` |
+|---|:---:|:---:|
+| Basic Flag CRUD & Toggling | ✅ Supported | ✅ Supported |
+| Multivariate Feature Flagging | ✅ Supported | ✅ Supported |
+| **A/B Experiment Lifecycle** (`create_experiment`) | ❌ Not available | ✅ **Native MCP Tool** |
+| **Bayesian Statistics Engine** (`get_experiment_results`) | ❌ Not available | ✅ **Monte Carlo Beta Posterior Wins** |
+| **Autonomous Winner Rollout** (`ship_winner`) | ❌ Not available | ✅ **One-Prompt 100% Rollout** |
+| **Mobile Developer Starter Kit** | ❌ Not included | ✅ **Flutter app with custom event tracking** |
 
 ---
 

@@ -9,7 +9,7 @@
 
 | Time | Scene | Screen Recording | Voiceover / Action |
 |------|-------|------------------|--------------------|
-| **0:00 - 0:25** | **The Problem & Intro** | Self-hosted Flagsmith running at `localhost:8000` | *"Feature flagging and A/B testing often require tedious dashboard clicking and manual rollout. Meet FlagForge: the Model Context Protocol server that turns your AI coding agent into an autonomous experimentation engine on top of Flagsmith."* |
+| **0:00 - 0:25** | **The Hook & Differentiator** | Self-hosted Flagsmith running at `localhost:8000` | *"Flagsmith has an official MCP server for basic flag administration, but it lacks an experimentation engine. Meet FlagForge: flagsmith-mcp adds the missing experimentation layer — A/B test creation, Bayesian win probability calculations, and automatic winner rollout, paired with a live Flutter demo kit."* |
 | **0:25 - 0:55** | **Agent in Action** | Claude Code / Terminal with `flagsmith-mcp` | Paste prompt: `Use flagsmith-mcp to create a multivariate flag called cta_button with variants variant_a and variant_b, then create an experiment measuring cta_clicked events.` |
 | **0:55 - 1:20** | **Live Flagsmith Update** | Switch to Flagsmith Dashboard (`localhost:8000`) | Show the `cta_button` flag created live with 50/50 variant traffic splits without leaving the editor. *"The flag and multivariate options were generated instantly via MCP tools."* |
 | **1:20 - 1:55** | **Flutter Demo App** | Browser or Flutter desktop window (`flagforge-flutter`) | Show the landing page. Point out Variant A (Blue 'Get Started'). Click the button. Open debug panel. Show Session ID and click simulation. Hit **"Simulate 50 Clicks"**. Show the snackbar confirming events fired. |
