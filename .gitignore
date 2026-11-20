@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.venv/
+env/
+venv/
+
+# Environment and Local Data
+.env
+experiments_data.json
+*.local
+
+# Flutter / Dart
+flagforge-flutter/.dart_tool/
+flagforge-flutter/build/
+flagforge-flutter/.flutter-plugins
+flagforge-flutter/.flutter-plugins-dependencies
+flagforge-flutter/.env
+flagforge-flutter/ephemeral/
+
+# Docker
+postgres_data/

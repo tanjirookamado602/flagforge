@@ -1,0 +1,66 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: flagsmith_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flagsmith_secure_password}
+      POSTGRES_DB: ${POSTGRES_DB:-flagsmith}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ${POSTGRES_DB:-flagsmith} -U ${POSTGRES_USER:-postgres}"]
+      interval: 3s
+      timeout: 3s
+      retries: 15
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+  flagsmith:
+    image: flagsmith/flagsmith:latest
+    container_name: flagsmith
+    restart: unless-stopped
+    ports:
+      - "${FLAGSMITH_PORT:-8000}:8000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-flagsmith_secure_password}@postgres:5432/${POSTGRES_DB:-flagsmith}
+      USE_POSTGRES_FOR_ANALYTICS: "${USE_POSTGRES_FOR_ANALYTICS:-true}"
+      ENVIRONMENT: ${ENVIRONMENT:-local}
+      DJANGO_ALLOWED_HOSTS: "${DJANGO_ALLOWED_HOSTS:-*}"
+      FLAGSMITH_DOMAIN: ${FLAGSMITH_DOMAIN:-localhost:8000}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-flagforge-super-secret-key-change-in-production-12345}
+      TASK_RUN_METHOD: ${TASK_RUN_METHOD:-TASK_PROCESSOR}
+      ENABLE_TELEMETRY: "${ENABLE_TELEMETRY:-false}"
+      PREVENT_SIGNUP: "${PREVENT_SIGNUP:-false}"
+      ALLOW_ADMIN_INITIATION_VIA_CLI: "${ALLOW_ADMIN_INITIATION_VIA_CLI:-true}"
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@flagforge.local}
+      ORGANISATION_NAME: "${ORGANISATION_NAME:-FlagForge}"
+      PROJECT_NAME: "${PROJECT_NAME:-flagforge-demo}"
+    healthcheck:
+      test: ["CMD-SHELL", "flagsmith healthcheck tcp"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  flagsmith_processor:
+    image: flagsmith/flagsmith:latest
+    container_name: flagsmith_processor
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-flagsmith_secure_password}@postgres:5432/${POSTGRES_DB:-flagsmith}
+      USE_POSTGRES_FOR_ANALYTICS: "${USE_POSTGRES_FOR_ANALYTICS:-true}"
+      ENVIRONMENT: ${ENVIRONMENT:-local}
+    command: run-task-processor
+    depends_on:
+      postgres:
+        condition: service_healthy
+      flagsmith:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
