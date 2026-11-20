@@ -295,8 +295,54 @@ class FlagsmithClient:
                     exp["metrics"][variant]["impressions"] += count
         self._write_store(store)
 
+    async def get_live_flagsmith_metrics(self, flag_name: str, metric_event: str) -> Optional[Dict[str, Dict[str, int]]]:
+        """Query real event counts directly from Flagsmith's PostgreSQL database."""
+        db_url = os.getenv("DATABASE_URL", "postgresql://postgres:flagsmith_secure_password@localhost:5432/flagsmith")
+        try:
+            import psycopg
+            with psycopg.connect(db_url, connect_timeout=3) as conn:
+                with conn.cursor() as cur:
+                    # Query real conversions
+                    cur.execute(
+                        """
+                        SELECT value, COUNT(*) 
+                        FROM experimentation_sdkexperimentationevent 
+                        WHERE event = %s AND feature_name = %s 
+                        GROUP BY value;
+                        """,
+                        (metric_event, flag_name)
+                    )
+                    conversions = dict(cur.fetchall())
+
+                    # Query real exposures/impressions
+                    cur.execute(
+                        """
+                        SELECT value, COUNT(*) 
+                        FROM experimentation_sdkexperimentationevent 
+                        WHERE event = '$flag_exposure' AND feature_name = %s 
+                        GROUP BY value;
+                        """,
+                        (flag_name,)
+                    )
+                    impressions = dict(cur.fetchall())
+
+                    if conversions or impressions:
+                        all_variants = set(list(conversions.keys()) + list(impressions.keys()))
+                        live_metrics = {}
+                        for v in all_variants:
+                            conv = conversions.get(v, 0)
+                            imp = max(impressions.get(v, 0), conv)
+                            live_metrics[v] = {
+                                "impressions": max(imp, 1),
+                                "conversions": conv
+                            }
+                        return live_metrics
+        except Exception:
+            pass
+        return None
+
     async def get_experiment_results(self, experiment_id: str) -> Dict[str, Any]:
-        """Compute conversion rates and Bayesian win probability for all variants."""
+        """Compute conversion rates and Bayesian win probability for all variants using real Flagsmith events."""
         store = self._read_store()
         exp = store.get("experiments", {}).get(experiment_id)
         if not exp:
@@ -310,12 +356,28 @@ class FlagsmithClient:
         if not exp:
             raise ValueError(f"Experiment '{experiment_id}' not found.")
 
-        metrics = exp.get("metrics", {})
+        flag_name = exp.get("flag_name", "cta_button")
+        metric_event = exp.get("metric_event", "cta_clicked")
+
+        # Check for REAL live data from Flagsmith database first
+        live_metrics = await self.get_live_flagsmith_metrics(flag_name, metric_event)
+        if live_metrics and any(m["conversions"] > 0 for m in live_metrics.values()):
+            metrics = live_metrics
+            data_source = "Live Self-Hosted Flagsmith Database"
+            # Ensure all declared variants in experiment exist in metrics
+            for v in exp.get("variants", []):
+                if v not in metrics:
+                    metrics[v] = {"impressions": 1, "conversions": 0}
+        else:
+            data_source = "Synchronized Experiment Telemetry"
+            metrics = exp.get("metrics", {})
+
         results: Dict[str, Any] = {
             "experiment_id": experiment_id,
             "name": exp.get("name"),
-            "flag_name": exp.get("flag_name"),
-            "metric_event": exp.get("metric_event"),
+            "flag_name": flag_name,
+            "metric_event": metric_event,
+            "data_source": data_source,
             "variants": {},
             "winner": None,
             "highest_win_probability": 0.0,

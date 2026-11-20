@@ -121,6 +121,7 @@ class _LandingPageState extends State<LandingPage> {
           _statusMessage = 'Connected to Flagsmith (Flag: cta_button)';
           _isLoading = false;
         });
+        _sendFlagsmithEvent(eventName: r'$flag_exposure', value: _activeVariant, count: 1);
       }
     } catch (e) {
       if (mounted) {
@@ -132,29 +133,48 @@ class _LandingPageState extends State<LandingPage> {
     }
   }
 
+  Future<void> _sendFlagsmithEvent({
+    required String eventName,
+    required String value,
+    int count = 1,
+  }) async {
+    final baseUrl = _getEnv('FLAGSMITH_BASE_URL', 'http://localhost:8000');
+    final cleanBaseUrl = baseUrl.replaceAll('/api/v1/', '').replaceAll('/api/v1', '');
+    final envKey = _getEnv('FLAGSMITH_ENVIRONMENT_KEY', _defaultEnvKey);
+    final url = Uri.parse('$cleanBaseUrl/api/v1/events/');
+
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    final events = List.generate(count, (index) => {
+      'event': eventName,
+      'feature_name': 'cta_button',
+      'identifier': _sessionId,
+      'timestamp': nowMs + index,
+      'value': value,
+    });
+
+    try {
+      await http.post(
+        url,
+        headers: {
+          'X-Environment-Key': envKey,
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'events': events}),
+      ).timeout(const Duration(seconds: 3));
+    } catch (_) {}
+  }
+
   Future<void> _logClickEvent({int count = 1}) async {
     setState(() {
       _clickCount += count;
     });
 
-    // Send custom event to Flagsmith / local API
-    final baseUrl = _getEnv('FLAGSMITH_BASE_URL', 'http://localhost:8000');
-    try {
-      final cleanBaseUrl = baseUrl.replaceAll('/api/v1/', '').replaceAll('/api/v1', '');
-      await http.post(
-        Uri.parse('$cleanBaseUrl/api/v1/analytics/events/'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'event': 'cta_clicked',
-          'variant': _activeVariant,
-          'session_id': _sessionId,
-          'count': count,
-          'timestamp': DateTime.now().toIso8601String(),
-        }),
-      ).timeout(const Duration(milliseconds: 800));
-    } catch (_) {
-      // Event logged locally
-    }
+    // Send real experimentation event directly to self-hosted Flagsmith API
+    await _sendFlagsmithEvent(
+      eventName: 'cta_clicked',
+      value: _activeVariant,
+      count: count,
+    );
 
     if (mounted && count == 1) {
       ScaffoldMessenger.of(context).showSnackBar(

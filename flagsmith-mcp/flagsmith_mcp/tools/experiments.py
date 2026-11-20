@@ -59,7 +59,7 @@ def register_experiment_tools(mcp: FastMCP) -> None:
 
         lines = [
             f"# Experiment Results: {results['name']} ({results['experiment_id']})",
-            f"Target Flag: `{results['flag_name']}` | Metric: `{results['metric_event']}`\n",
+            f"Target Flag: `{results['flag_name']}` | Metric: `{results['metric_event']}` | Source: **{results.get('data_source', 'Live Flagsmith Database')}**\n",
             "| Variant | Impressions | Conversions | Conversion Rate | Win Probability |",
             "|---------|-------------|-------------|-----------------|-----------------|",
         ]
