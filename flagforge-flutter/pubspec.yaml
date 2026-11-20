@@ -1,0 +1,29 @@
+name: flagforge_demo
+description: "FlagForge Flutter Demo Application"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flagsmith: ^6.3.0
+  flutter_dotenv: ^6.0.2
+  uuid: ^4.6.0
+  http: ^1.6.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+dependency_overrides:
+  dio: 5.7.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - .env
