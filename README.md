@@ -1,6 +1,7 @@
 # FlagForge 🚩
 
-[![PyPI version](https://img.shields.io/badge/PyPI-v0.1.0-blue.svg)](https://pypi.org/project/flagsmith-mcp/)
+[![PyPI version](https://img.shields.io/badge/pypi-v0.1.0-blue.svg)](https://pypi.org/project/flagsmith-mcp/)
+[![GitHub stars](https://img.shields.io/github/stars/assassinaj602/flagforge.svg?style=social)](https://github.com/assassinaj602/flagforge)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB.svg?logo=python&logoColor=white)](https://python.org)
 [![Flutter 3.x](https://img.shields.io/badge/Flutter-3.x-02569B.svg?logo=flutter&logoColor=white)](https://flutter.dev)
